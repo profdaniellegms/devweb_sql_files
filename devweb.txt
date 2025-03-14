@@ -1,0 +1,66 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+// SISTEMA PARA BIBLIOTECA
+// Todo sistema gira em torno de uma ou mais
+// tabelas-fato. Neste caso, o fato a ser
+// registrado é o empréstimo de livros a usuários.
+
+// REGRAS DE NEGÓCIO
+// Um usuário pode pegar até 3 livros no mesmo
+// empréstimo. A cada dia de atraso na devolução
+// dos livros será cobrado do usuário o valor
+// de 1 real por livro por dia. Isto significa que
+// se uma pessoa pegou emprestado 2 livros e atrasou
+// 3 dias para devolver ela irá pagar 6 reais 
+// de multa.
+
+// TABELAS MODELO PRIMÁRIAS
+// Não possuem chaves estrangeiras
+Table usuarios {
+  id_usuario varchar [pk]
+  nome_completo varchar [not null]
+  email varchar [not null]
+  telefone varchar [not null]
+}
+
+Table autores {
+  id_autor varchar [pk]
+  nome varchar [not null]
+  nacionalidade varchar
+}
+
+// TABELA MODELO SECUNDÁRIA
+// Recebe chave estrangeira de outra tabela modelo
+Table livros {
+  id_livro varchar [pk]
+  titulo varchar [not null]
+  ano integer [not null]
+  edicao integer [not null]
+  editora varchar [not null]
+  fk_autor varchar [not null]
+}
+
+// TABELA FATO
+// Registro de algo que acontece em 
+// determinado local, data e/ou hora
+Table emprestimos {
+  id_emprestimo varchar [pk]
+  data_emprestimo date [not null]
+  data_devol_prevista date
+  data_devol_efetiva date
+  valor_multa double
+  fk_usuario varchar [not null]
+}
+
+// TABELA RELAÇÃO
+// Tabela derivada de um relacionamento N:N
+Table livros_emprestimos {
+  fk_livro varchar [not null]
+  fk_emprestimo varchar [not null]
+}
+
+Ref: livros.fk_autor > autores.id_autor
+Ref: emprestimos.fk_usuario > usuarios.id_usuario
+Ref: livros_emprestimos.fk_livro > livros.id_livro
+Ref: livros_emprestimos.fk_emprestimo > emprestimos.id_emprestimo
